@@ -2,6 +2,10 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import type { ProviderCapabilitiesRow } from "@creditbridge/shared";
 import { fetchProviders } from "../lib/api";
 import ProviderCard from "../components/ProviderCard";
+import ConsentScreen from "../components/ConsentScreen";
+
+/** Demo consumer ID — in production this comes from auth session */
+const DEMO_CONSUMER_ID = "demo-consumer-001";
 
 export default function ConnectCreditReport() {
   const [providers, setProviders] = useState<ProviderCapabilitiesRow[]>([]);
@@ -13,6 +17,9 @@ export default function ConnectCreditReport() {
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const structuredInputRef = useRef<HTMLInputElement>(null);
 
+  // Consent screen state
+  const [consentProvider, setConsentProvider] = useState<ProviderCapabilitiesRow | null>(null);
+
   useEffect(() => {
     fetchProviders()
       .then(setProviders)
@@ -23,15 +30,30 @@ export default function ConnectCreditReport() {
   // ── Handlers ─────────────────────────────
 
   const handleConnect = useCallback((name: string) => {
-    alert(`Connect flow for ${name} is not yet implemented.`);
-  }, []);
+    const provider = providers.find((p) => p.provider_name === name);
+    if (provider) {
+      setConsentProvider(provider);
+    } else {
+      alert(`Provider "${name}" not found.`);
+    }
+  }, [providers]);
 
   const handleDisconnect = useCallback((name: string) => {
-    alert(`Disconnect flow for ${name} is not yet implemented.`);
+    // Disconnect already handled by ProviderCard; just log
+    console.log(`[connect] Disconnected from ${name}`);
   }, []);
 
   const handleRefresh = useCallback((name: string) => {
     alert(`Refresh flow for ${name} is not yet implemented.`);
+  }, []);
+
+  const handleConsentAuthorize = useCallback(() => {
+    // ProviderCard will handle the redirect; close consent screen
+    setConsentProvider(null);
+  }, []);
+
+  const handleConsentCancel = useCallback(() => {
+    setConsentProvider(null);
   }, []);
 
   const handlePdfDrop = useCallback((e: React.DragEvent) => {
@@ -60,7 +82,10 @@ export default function ConnectCreditReport() {
 
   // Active + sandbox providers for Card 1
   const connectableProviders = providers.filter(
-    (p) => p.provider_status === "active" || p.provider_status === "sandbox" || p.provider_status === "inactive"
+    (p) =>
+      p.provider_status === "active" ||
+      p.provider_status === "sandbox" ||
+      p.provider_status === "inactive"
   );
 
   // ── Render ───────────────────────────────
@@ -85,6 +110,16 @@ export default function ConnectCreditReport() {
 
   return (
     <div className="connect-page">
+      {/* Consent Screen Modal */}
+      {consentProvider && (
+        <ConsentScreen
+          provider={consentProvider}
+          consumerId={DEMO_CONSUMER_ID}
+          onAuthorize={handleConsentAuthorize}
+          onCancel={handleConsentCancel}
+        />
+      )}
+
       <header className="connect-page__header">
         <h1>Connect Your Credit Report</h1>
         <p className="connect-page__subtitle">
@@ -106,6 +141,7 @@ export default function ConnectCreditReport() {
               <ProviderCard
                 key={p.provider_name}
                 provider={p}
+                consumerId={DEMO_CONSUMER_ID}
                 onConnect={handleConnect}
                 onDisconnect={handleDisconnect}
                 onRefresh={handleRefresh}
