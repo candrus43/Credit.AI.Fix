@@ -7,3 +7,6 @@ dist/
 .env.local
 .DS_Store
 server/data/
+# Storage for uploaded PDFs — keep .gitkeep, ignore everything else
+server/storage/reports/*
+!server/storage/reports/.gitkeep
