@@ -42,3 +42,6 @@ VALUES
   ('TransUnion Consumer','inactive',         0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 'not_approved'),
   ('Experian Consumer',  'inactive',         0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 'not_approved'),
   ('Synthetic',          'active',           0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 'approved');
+
+-- Note: provider_name is the canonical identifier across the system.
+-- Adapters key off this name; do not rename without coordination.
