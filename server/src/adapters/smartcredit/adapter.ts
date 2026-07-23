@@ -246,12 +246,11 @@ export class SmartCreditAdapter implements ProviderAdapter {
 
   /**
    * SmartCredit has report_retrieval_supported=0 in the database.
-   * This method always throws — even in sandbox — because the intended flow
-   * is PDF upload, not API retrieval.
+   * Report retrieval is NOT supported — the intended flow is PDF upload.
    *
-   * Sandbox: throws directing user to upload PDF.
+   * Sandbox: returns a graceful result with requiresPdfUpload flag.
    * Production: blocked (throws with authorization message).
-   * Not configured: throws with configuration message.
+   * Not configured: returns "not configured" result.
    */
   async retrieveReport?(
     _consumerId: string,
@@ -259,11 +258,33 @@ export class SmartCreditAdapter implements ProviderAdapter {
   ): Promise<ReportResult> {
     if (this.mode === "production") productionBlocked();
 
-    throw new Error(
-      "Report retrieval not supported — please upload your SmartCredit PDF report. " +
-        "SmartCredit does not expose a programmatic report API. " +
-        "Download your report from smartcredit.com and use the PDF upload feature."
-    );
+    if (this.mode === "not_configured") {
+      return {
+        success: false,
+        tradelines: [],
+        inquiries: [],
+        scores: [],
+        requiresPdfUpload: true,
+        message: "SmartCredit adapter is not configured. Set SMARTCREDIT_MODE to enable.",
+        providerName: "SmartCredit",
+        mode: "not_configured",
+      };
+    }
+
+    // Sandbox: return graceful result directing to PDF upload
+    return {
+      success: false,
+      tradelines: [],
+      inquiries: [],
+      scores: [],
+      requiresPdfUpload: true,
+      message:
+        "SmartCredit does not support direct report retrieval. " +
+        "Please download your SmartCredit 3-bureau report as a PDF from smartcredit.com " +
+        "and use the PDF upload feature on this page.",
+      providerName: "SmartCredit",
+      mode: "sandbox",
+    };
   }
 
   /**

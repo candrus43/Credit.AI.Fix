@@ -1325,3 +1325,61 @@
   cursor: not-allowed;
   pointer-events: none;
 }
+
+/* ───── PDF Upload Guidance Banner ───── */
+
+.pdf-guidance-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  animation: consent-fade-in 0.2s ease-out;
+}
+
+.pdf-guidance-banner__content {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.pdf-guidance-banner__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.pdf-guidance-banner__content strong {
+  display: block;
+  color: #1e40af;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.pdf-guidance-banner__content p {
+  color: #374151;
+  font-size: 0.85rem;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.pdf-guidance-banner__dismiss {
+  background: none;
+  border: none;
+  font-size: 1.1rem;
+  color: #6b7280;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.pdf-guidance-banner__dismiss:hover {
+  background: #dbeafe;
+  color: #374151;
+}

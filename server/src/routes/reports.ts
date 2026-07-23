@@ -71,6 +71,24 @@ router.post("/retrieve", async (req: Request, res: Response) => {
       return;
     }
 
+    // ── Check provider capabilities ───────────
+
+    // Look up the provider's capabilities from the DB
+    const capabilitiesRow = db
+      .prepare("SELECT report_retrieval_supported FROM provider_capabilities WHERE provider_name = ?")
+      .get(providerName) as { report_retrieval_supported: number } | undefined;
+
+    if (capabilitiesRow && capabilitiesRow.report_retrieval_supported === 0) {
+      res.status(422).json({
+        error: "PDF_UPLOAD_REQUIRED",
+        provider: providerName,
+        message:
+          `${providerName} does not support direct report retrieval. ` +
+          "Please upload a PDF report instead.",
+      });
+      return;
+    }
+
     const adapter = getAdapter(providerName, db);
 
     // ── Call adapter ──────────────────────────
@@ -84,6 +102,15 @@ router.post("/retrieve", async (req: Request, res: Response) => {
       );
 
       if (!adapterResult.success) {
+        // Check if adapter is directing to PDF upload
+        if ("requiresPdfUpload" in adapterResult && adapterResult.requiresPdfUpload) {
+          res.status(422).json({
+            error: "PDF_UPLOAD_REQUIRED",
+            provider: providerName,
+            message: adapterResult.message || `${providerName} requires PDF upload instead of direct retrieval.`,
+          });
+          return;
+        }
         res.status(502).json({
           error: "Report retrieval failed",
           message:
@@ -95,6 +122,15 @@ router.post("/retrieve", async (req: Request, res: Response) => {
       adapterResult = await adapter.retrieveReport(effectiveConsumerId, {});
 
       if (!adapterResult.success) {
+        // Check if adapter is directing to PDF upload
+        if (adapterResult.requiresPdfUpload) {
+          res.status(422).json({
+            error: "PDF_UPLOAD_REQUIRED",
+            provider: providerName,
+            message: adapterResult.message || `${providerName} requires PDF upload instead of direct retrieval.`,
+          });
+          return;
+        }
         res.status(502).json({
           error: "Report retrieval failed",
           message:
