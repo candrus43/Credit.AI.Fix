@@ -708,3 +708,620 @@
   font-weight: 500;
   color: #991b1b;
 }
+
+/* ───── Report Review Page ───── */
+
+.review-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1rem 0 8rem;
+}
+
+.review-page__loading,
+.review-page__error {
+  text-align: center;
+  padding: 4rem 2rem;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.review-page__error {
+  color: #c0392b;
+}
+
+/* ───── Review Header ───── */
+
+.review-header {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.review-header__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.review-header__title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a2332;
+  margin: 0 0 0.5rem;
+}
+
+.review-header__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.review-header__provider {
+  font-weight: 600;
+  color: #1a2332;
+}
+
+.review-header__date {
+  color: #888;
+}
+
+.review-header__confidence {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.confidence-score {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.confidence-score.text--green { color: #16a34a; }
+.confidence-score.text--yellow { color: #ca8a04; }
+.confidence-score.text--red { color: #dc2626; }
+
+.confidence-label {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 500;
+  margin-top: 0.25rem;
+}
+
+.review-header__notice {
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 1rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  color: #92400e;
+}
+
+/* ───── Review Sections ───── */
+
+.review-section {
+  margin-bottom: 1.5rem;
+}
+
+.review-section__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #1a2332;
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.review-section--discrepancies .review-section__title {
+  color: #991b1b;
+  border-bottom-color: #fecaca;
+}
+
+/* ───── Review Card ───── */
+
+.review-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.review-card__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 0.75rem;
+}
+
+/* ───── Review Field ───── */
+
+.review-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+}
+
+.review-field--low-conf {
+  background: #fefce8;
+  border: 1px solid #fde68a;
+}
+
+.review-field__label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.review-field__value {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #1a2332;
+}
+
+.review-field__text {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.review-field__text:hover .review-field__edit-icon {
+  opacity: 1;
+}
+
+.review-field__edit-icon {
+  opacity: 0;
+  font-size: 0.75rem;
+  color: #2563eb;
+  transition: opacity 0.15s;
+}
+
+.review-field__edit-inline {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.review-field__input {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  color: #1a2332;
+  background: #fff;
+  width: 100%;
+  max-width: 200px;
+}
+
+.review-field__input:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* ───── Confidence Dots ───── */
+
+.conf-dot {
+  font-size: 0.6rem;
+  flex-shrink: 0;
+}
+
+.conf--green { color: #16a34a; }
+.conf--yellow { color: #ca8a04; }
+.conf--red { color: #dc2626; }
+
+/* ───── Bureau Tabs ───── */
+
+.bureau-tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 0;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.bureau-tab {
+  padding: 0.6rem 1.25rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #666;
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.bureau-tab:hover {
+  color: #2563eb;
+}
+
+.bureau-tab--active {
+  color: #2563eb;
+  border-bottom-color: #2563eb;
+}
+
+/* ───── Score Display ───── */
+
+.score-display {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.score-display:last-child {
+  border-bottom: none;
+}
+
+.score-display__value {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #1a2332;
+  line-height: 1;
+}
+
+.score-display__model {
+  font-size: 0.8rem;
+  color: #888;
+  font-weight: 500;
+}
+
+.score-display__date {
+  font-size: 0.75rem;
+  color: #aaa;
+  margin-left: auto;
+}
+
+/* ───── Account List ───── */
+
+.account-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ───── Account Card ───── */
+
+.account-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: box-shadow 0.15s;
+}
+
+.account-card:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.account-card--low-conf {
+  border-color: #fde68a;
+}
+
+.account-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.account-card__header:hover {
+  background: #f8fafc;
+}
+
+.account-card__summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.account-card__name {
+  font-weight: 600;
+  color: #1a2332;
+  font-size: 0.9rem;
+}
+
+.account-card__account {
+  font-size: 0.8rem;
+  color: #888;
+  font-family: monospace;
+}
+
+.account-card__match {
+  font-size: 0.75rem;
+  color: #2563eb;
+  font-weight: 500;
+  background: #eff6ff;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+}
+
+.account-card__quick {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 600;
+  color: #374151;
+  font-size: 0.9rem;
+}
+
+.account-card__expand {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  transition: transform 0.2s;
+}
+
+.account-card__expand.expanded {
+  transform: rotate(180deg);
+}
+
+.account-card__body {
+  padding: 0.75rem 1rem 1rem;
+  border-top: 1px solid #f1f5f9;
+  animation: card-expand 0.2s ease-out;
+}
+
+@keyframes card-expand {
+  from { opacity: 0; max-height: 0; }
+  to { opacity: 1; max-height: 800px; }
+}
+
+/* ───── Payment History ───── */
+
+.payment-history {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.payment-history__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #888;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.payment-history__bars {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
+}
+
+.payment-history__bar {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ph--green { background: #16a34a; }
+.ph--yellow { background: #ca8a04; }
+.ph--orange { background: #ea580c; }
+.ph--red { background: #dc2626; }
+.ph--red-dark { background: #991b1b; }
+.ph--gray { background: #d1d5db; }
+
+/* ───── Expandable Sections ───── */
+
+.expandable-section {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+
+.expandable-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  user-select: none;
+}
+
+.expandable-section__header:hover {
+  background: #f8fafc;
+}
+
+.expandable-section__arrow {
+  font-size: 0.65rem;
+  color: #94a3b8;
+  transition: transform 0.2s;
+}
+
+.expandable-section.expanded .expandable-section__arrow {
+  transform: rotate(180deg);
+}
+
+.expandable-section__body {
+  padding: 0.75rem 1.25rem 1rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ───── Discrepancy Panel ───── */
+
+.discrepancy-panel {
+  background: #fff;
+  border: 2px solid #fecaca;
+  border-radius: 10px;
+  padding: 1.25rem 1.5rem;
+}
+
+.discrepancy-panel__desc {
+  font-size: 0.85rem;
+  color: #991b1b;
+  margin: 0 0 1rem;
+  font-weight: 500;
+}
+
+.discrepancy-item {
+  padding: 0.75rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background 0.15s;
+}
+
+.discrepancy-item:last-child {
+  margin-bottom: 0;
+}
+
+.discrepancy-item--acked {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  opacity: 0.7;
+}
+
+.discrepancy-item__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  min-width: 140px;
+}
+
+.discrepancy-item__label input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #2563eb;
+}
+
+.discrepancy-item__field {
+  font-weight: 600;
+  color: #1a2332;
+}
+
+.discrepancy-item__values {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #555;
+  flex: 1;
+  min-width: 0;
+}
+
+.discrepancy-item__vs {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-style: italic;
+}
+
+.discrepancy-item__desc {
+  width: 100%;
+  margin: 0.25rem 0 0;
+  font-size: 0.78rem;
+  color: #888;
+}
+
+/* ───── Confirm Bar (Sticky Bottom) ───── */
+
+.confirm-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border-top: 2px solid #e2e8f0;
+  box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  padding: 1rem 0;
+}
+
+.confirm-bar__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.confirm-bar__left {
+  flex: 1;
+  min-width: 280px;
+}
+
+.confirm-bar__checkbox {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.confirm-bar__checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-top: 1px;
+  accent-color: #2563eb;
+  flex-shrink: 0;
+}
+
+.confirm-bar__checkbox strong {
+  color: #1a2332;
+}
+
+.confirm-bar__notice {
+  font-size: 0.75rem;
+  color: #999;
+  margin: 0.35rem 0 0 1.65rem;
+  font-style: italic;
+}
+
+.confirm-bar__right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.btn--lg {
+  padding: 0.7rem 1.75rem;
+  font-size: 0.95rem;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}

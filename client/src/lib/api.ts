@@ -72,3 +72,84 @@ export async function disconnectProvider(
   }
   return res.json();
 }
+
+// ── Report API ──────────────────────────────────
+
+export interface ReportMetadata {
+  id: number;
+  consumer_id: string;
+  provider_name: string;
+  source_type: string;
+  report_date: string | null;
+  import_date: string;
+  connection_status: string;
+  three_bureau_available: number;
+  consumer_confirmed: number;
+  eligible_for_automated_analysis: number;
+  parser_version: string;
+  original_response_path: string | null;
+}
+
+/**
+ * Fetch report metadata by ID.
+ */
+export async function fetchReport(id: number | string): Promise<ReportMetadata> {
+  const res = await fetch(`${BASE_URL}/reports/${encodeURIComponent(id)}`);
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Failed to fetch report: ${res.status}`);
+  }
+  return res.json();
+}
+
+/**
+ * Confirm report data with optional field corrections.
+ */
+export async function confirmReport(
+  id: number | string,
+  correctedFields?: Record<string, unknown>
+): Promise<{ reportId: number; confirmed: boolean; message: string }> {
+  const res = await fetch(`${BASE_URL}/reports/${encodeURIComponent(id)}/confirm`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ correctedFields }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Confirmation failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+/**
+ * Normalize extracted report data (cross-bureau matching + discrepancies).
+ */
+export async function normalizeReportData(rawData: Record<string, unknown>, providerName: string) {
+  const res = await fetch(`${BASE_URL}/reports/normalize`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ providerName, rawData }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Normalization failed: ${res.status}`);
+  }
+  return res.json();
+}
+
+/**
+ * Upload a PDF credit report.
+ */
+export async function uploadReport(file: File) {
+  const form = new FormData();
+  form.append("file", file);
+  const res = await fetch(`${BASE_URL}/reports/upload`, {
+    method: "POST",
+    body: form,
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || `Upload failed: ${res.status}`);
+  }
+  return res.json();
+}

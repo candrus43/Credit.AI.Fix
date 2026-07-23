@@ -398,6 +398,32 @@ router.post(
 );
 
 /**
+ * GET /api/reports/:id
+ *
+ * Returns report metadata (and extraction data if available).
+ */
+router.get("/:id", (req: Request, res: Response) => {
+  const idParam = req.params.id;
+  const reportId = parseInt(Array.isArray(idParam) ? idParam[0] : idParam, 10);
+  if (isNaN(reportId)) {
+    res.status(400).json({ error: "Invalid report ID" });
+    return;
+  }
+
+  const db = getDb();
+  const report = db
+    .prepare("SELECT * FROM reports WHERE id = ?")
+    .get(reportId) as Record<string, unknown> | undefined;
+
+  if (!report) {
+    res.status(404).json({ error: "Report not found" });
+    return;
+  }
+
+  res.json(report);
+});
+
+/**
  * POST /api/reports/:id/confirm
  *
  * Consumer confirms or corrects extracted report data.

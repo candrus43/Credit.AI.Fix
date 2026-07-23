@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import type { ProviderCapabilitiesRow } from "@creditbridge/shared";
-import { fetchProviders } from "../lib/api";
+import { fetchProviders, uploadReport } from "../lib/api";
 import ProviderCard from "../components/ProviderCard";
 import ConsentScreen from "../components/ConsentScreen";
 
@@ -8,12 +9,14 @@ import ConsentScreen from "../components/ConsentScreen";
 const DEMO_CONSUMER_ID = "demo-consumer-001";
 
 export default function ConnectCreditReport() {
+  const navigate = useNavigate();
   const [providers, setProviders] = useState<ProviderCapabilitiesRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [uploadedPdf, setUploadedPdf] = useState<File | null>(null);
   const [uploadedStructured, setUploadedStructured] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   const pdfInputRef = useRef<HTMLInputElement>(null);
   const structuredInputRef = useRef<HTMLInputElement>(null);
 
@@ -74,6 +77,35 @@ export default function ConnectCreditReport() {
     const file = e.target.files?.[0];
     if (file) setUploadedStructured(file);
   }, []);
+
+  const handleUploadPdf = useCallback(async () => {
+    if (!uploadedPdf) return;
+    setUploading(true);
+    try {
+      const result = await uploadReport(uploadedPdf);
+      // Store extraction data for the review page
+      sessionStorage.setItem(`report_data_${result.reportId}`, JSON.stringify(result));
+      navigate(`/reports/${result.reportId}/review`);
+    } catch (err) {
+      alert(`Upload failed: ${(err as Error).message}`);
+    } finally {
+      setUploading(false);
+    }
+  }, [uploadedPdf, navigate]);
+
+  const handleUploadStructured = useCallback(async () => {
+    if (!uploadedStructured) return;
+    setUploading(true);
+    try {
+      const result = await uploadReport(uploadedStructured);
+      sessionStorage.setItem(`report_data_${result.reportId}`, JSON.stringify(result));
+      navigate(`/reports/${result.reportId}/review`);
+    } catch (err) {
+      alert(`Upload failed: ${(err as Error).message}`);
+    } finally {
+      setUploading(false);
+    }
+  }, [uploadedStructured, navigate]);
 
   // Providers that support report retrieval
   const reportProviders = providers.filter(
@@ -251,6 +283,16 @@ export default function ConnectCreditReport() {
                   >
                     Remove
                   </button>
+                  <button
+                    className="btn btn--sm btn--primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUploadPdf();
+                    }}
+                    disabled={uploading}
+                  >
+                    {uploading ? "Uploading…" : "Upload & Review"}
+                  </button>
                 </div>
               ) : (
                 <div className="upload-zone__placeholder">
@@ -298,6 +340,16 @@ export default function ConnectCreditReport() {
                     }}
                   >
                     Remove
+                  </button>
+                  <button
+                    className="btn btn--sm btn--primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleUploadStructured();
+                    }}
+                    disabled={uploading}
+                  >
+                    {uploading ? "Uploading…" : "Upload & Review"}
                   </button>
                 </div>
               ) : (
