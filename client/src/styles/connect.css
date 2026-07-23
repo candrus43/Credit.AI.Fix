@@ -1,0 +1,501 @@
+/* ───── Connect Credit Report Page ───── */
+
+.connect-page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+}
+
+.connect-page__loading,
+.connect-page__error {
+  text-align: center;
+  padding: 4rem 2rem;
+  font-size: 1.1rem;
+  color: #666;
+}
+
+.connect-page__error {
+  color: #c0392b;
+}
+
+.connect-page__header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.connect-page__header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1a2332;
+  margin-bottom: 0.5rem;
+}
+
+.connect-page__subtitle {
+  color: #555;
+  font-size: 1.1rem;
+}
+
+/* ───── 2x2 Grid ───── */
+
+.connect-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .connect-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ───── Connect Card ───── */
+
+.connect-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.connect-card__icon {
+  font-size: 2rem;
+}
+
+.connect-card h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1a2332;
+  margin: 0;
+}
+
+.connect-card__desc {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.connect-card__info-text {
+  font-size: 0.8rem;
+  color: #888;
+  font-style: italic;
+  margin: 0;
+}
+
+.connect-card__fine-print {
+  font-size: 0.8rem;
+  color: #888;
+  margin: 0;
+}
+
+.connect-card__empty {
+  color: #999;
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.connect-card__synthetic-link {
+  color: #2563eb;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-top: 0.5rem;
+  display: inline-block;
+  text-decoration: none;
+  transition: color 0.15s;
+}
+
+.connect-card__synthetic-link:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* ───── Provider List in Card 1 ───── */
+
+.connect-card__providers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* ───── Provider Card ───── */
+
+.provider-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.provider-card__header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.provider-card__avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.avatar--green {
+  background: #16a34a;
+}
+
+.avatar--purple {
+  background: #7c3aed;
+}
+
+.avatar--gray {
+  background: #94a3b8;
+}
+
+.provider-card__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.provider-card__name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #1a2332;
+  margin: 0;
+}
+
+.provider-card__status-detail {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+}
+
+/* ───── Provider Badge (Status) ───── */
+
+.provider-badge {
+  display: inline-block;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.badge--gray {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.badge--yellow {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.badge--orange {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+.badge--green {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge--blue {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge--red {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge--purple {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.badge--pulse {
+  animation: badge-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* ───── Capability Tags ───── */
+
+.provider-card__capabilities,
+.provider-card__bureau {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.provider-card__label {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 500;
+}
+
+.capability-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.capability-tag {
+  display: inline-block;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.provider-card__none {
+  font-size: 0.8rem;
+  color: #999;
+  font-style: italic;
+}
+
+.text--success {
+  font-size: 0.8rem;
+  color: #16a34a;
+  font-weight: 600;
+}
+
+.text--muted {
+  font-size: 0.8rem;
+  color: #999;
+}
+
+/* ───── Provider Card Actions ───── */
+
+.provider-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.provider-card__note {
+  font-size: 0.75rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* ───── Buttons ───── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.55rem 1.25rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+
+.btn--sm {
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+}
+
+.btn--primary {
+  background: #2563eb;
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: #1d4ed8;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
+}
+
+.btn--outline {
+  background: transparent;
+  border: 1px solid #d1d5db;
+  color: #374151;
+}
+
+.btn--outline:hover {
+  background: #f9fafb;
+}
+
+.btn--outline-danger {
+  background: transparent;
+  border: 1px solid #fca5a5;
+  color: #dc2626;
+}
+
+.btn--outline-danger:hover {
+  background: #fef2f2;
+}
+
+/* ───── Report List (Card 2) ───── */
+
+.connect-card__report-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+}
+
+.report-list-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.5rem 0.75rem;
+  background: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.report-list-item__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.report-list-item__name {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.report-list-item__status {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+}
+
+.status--pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status--available {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.report-list-item__note {
+  font-size: 0.75rem;
+  color: #888;
+  margin: 0;
+}
+
+/* ───── Upload Zones (Card 3) ───── */
+
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.upload-section__title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #374151;
+  margin: 0;
+}
+
+.upload-zone {
+  border: 2px dashed #d1d5db;
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  position: relative;
+}
+
+.upload-zone:hover {
+  border-color: #2563eb;
+  background: #f8faff;
+}
+
+.upload-zone--active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.upload-zone__input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.upload-zone__placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.upload-zone__icon {
+  font-size: 1.5rem;
+}
+
+.upload-zone__hint {
+  font-size: 0.75rem;
+  color: #aaa;
+}
+
+.upload-zone__file {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.upload-zone__filename {
+  font-weight: 600;
+  color: #2563eb;
+  font-size: 0.9rem;
+}
+
+.upload-supported {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.upload-supported__label {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 500;
+}
