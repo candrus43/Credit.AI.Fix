@@ -153,3 +153,24 @@ export async function uploadReport(file: File) {
   }
   return res.json();
 }
+
+/**
+ * Retrieve a credit report from a provider adapter (e.g. Synthetic).
+ * Calls the adapter's three-bureau or single-bureau retrieval method,
+ * normalizes the data server-side, and returns the full normalized report.
+ */
+export async function retrieveReport(
+  providerName: string,
+  consumerId: string = "default"
+) {
+  const res = await fetch(`${BASE_URL}/reports/retrieve`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ providerName, consumerId }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(body.error || body.message || `Report retrieval failed: ${res.status}`);
+  }
+  return res.json();
+}

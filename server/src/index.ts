@@ -8,6 +8,7 @@ import uploadRouter, { ensureStorageDir } from "./routes/upload.js";
 import authRouter from "./routes/auth.js";
 import testingRouter from "./routes/testing.js";
 import mappingAdminRouter from "./routes/mapping-admin.js";
+import reportsRouter from "./routes/reports.js";
 import { getAllMappings } from "./normalization/mappings.js";
 import { seedInitialVersion } from "./normalization/mapping-store.js";
 
@@ -32,6 +33,7 @@ async function main() {
   app.use("/api/providers", providersRouter);
   app.use("/api/reports", uploadRouter);
   app.use("/api/reports", normalizeRouter);
+  app.use("/api/reports", reportsRouter);
   app.use("/api/auth", authRouter);
   app.use("/api/testing", testingRouter);
   app.use("/api/admin", mappingAdminRouter);
