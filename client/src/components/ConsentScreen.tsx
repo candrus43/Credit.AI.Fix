@@ -65,6 +65,9 @@ function getAccessedData(provider: ProviderCapabilitiesRow): Array<{
 }
 
 function getConnectionType(provider: ProviderCapabilitiesRow): string {
+  if (!provider.report_retrieval_supported) {
+    return `PDF Upload Required — ${provider.provider_name} does not yet support direct data access`;
+  }
   if (provider.refresh_supported && provider.monitoring_supported) {
     return "Ongoing monitoring";
   }
@@ -75,6 +78,9 @@ function getConnectionType(provider: ProviderCapabilitiesRow): string {
 }
 
 function getMonitoringNote(provider: ProviderCapabilitiesRow): string {
+  if (!provider.report_retrieval_supported) {
+    return "No — this provider does not support direct data retrieval. Upload a PDF report instead.";
+  }
   if (provider.monitoring_supported) {
     return "Yes — CreditBridge will periodically check for updates and alert you to changes.";
   }
@@ -186,6 +192,21 @@ export default function ConsentScreen({
               </li>
             </ul>
           </section>
+
+          {/* PDF Upload guidance for non-retrieval providers */}
+          {!provider.report_retrieval_supported && (
+            <section className="consent-section consent-section--notice">
+              <p className="consent-notice">
+                <strong>📄 PDF Upload Required:</strong> {provider.provider_name} does not
+                yet support direct report retrieval. After consent, you'll be guided to
+                upload your {provider.provider_name} PDF report. Download your report from{" "}
+                {provider.provider_name === "SmartCredit"
+                  ? "smartcredit.com"
+                  : `${provider.provider_name.toLowerCase()}.com`}{" "}
+                and use the PDF upload feature on the next screen.
+              </p>
+            </section>
+          )}
 
           {/* Independent platform notice */}
           <section className="consent-section consent-section--notice">

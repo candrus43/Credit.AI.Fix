@@ -23,6 +23,12 @@ export default function ConnectCreditReport() {
   // Consent screen state
   const [consentProvider, setConsentProvider] = useState<ProviderCapabilitiesRow | null>(null);
 
+  // PDF upload guidance banner
+  const [pdfGuidance, setPdfGuidance] = useState<ProviderCapabilitiesRow | null>(null);
+
+  // Ref for scrolling to PDF upload section
+  const uploadSectionRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     fetchProviders()
       .then(setProviders)
@@ -52,6 +58,13 @@ export default function ConnectCreditReport() {
   }, []);
 
   const handleRefresh = useCallback(async (name: string) => {
+    const provider = providers.find((p) => p.provider_name === name);
+    if (provider && !provider.report_retrieval_supported) {
+      // Provider doesn't support direct retrieval — guide to PDF upload
+      setPdfGuidance(provider);
+      uploadSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
     try {
       const result = await retrieveReport(name, DEMO_CONSUMER_ID);
       // Store the retrieval result for the review page
@@ -61,15 +74,29 @@ export default function ConnectCreditReport() {
       );
       navigate(`/reports/${result.reportId}/review`);
     } catch (err) {
-      alert(`Report retrieval failed: ${(err as Error).message}`);
+      const message = (err as Error).message;
+      // Check if this is a PDF_UPLOAD_REQUIRED response
+      if (message.includes("PDF_UPLOAD_REQUIRED") || message.includes("does not support direct report retrieval")) {
+        if (provider) setPdfGuidance(provider);
+        uploadSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+      alert(`Report retrieval failed: ${message}`);
     }
-  }, [navigate]);
+  }, [navigate, providers]);
 
   const handleConsentAuthorize = useCallback(() => {
     if (!consentProvider) return;
-    // After consent, trigger report retrieval
-    handleRefresh(consentProvider.provider_name);
+    const provider = consentProvider;
     setConsentProvider(null);
+    // If provider doesn't support direct retrieval, guide to PDF upload
+    if (!provider.report_retrieval_supported) {
+      setPdfGuidance(provider);
+      uploadSectionRef.current?.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
+    // Otherwise, trigger report retrieval
+    handleRefresh(provider.provider_name);
   }, [consentProvider, handleRefresh]);
 
   const handleConsentCancel = useCallback(() => {
@@ -169,6 +196,30 @@ export default function ConnectCreditReport() {
         />
       )}
 
+      {/* PDF Upload Guidance Banner */}
+      {pdfGuidance && (
+        <div className="pdf-guidance-banner">
+          <div className="pdf-guidance-banner__content">
+            <span className="pdf-guidance-banner__icon">📄</span>
+            <div>
+              <strong>{pdfGuidance.provider_name} does not yet support direct report retrieval.</strong>
+              <p>
+                Please download your {pdfGuidance.provider_name} 3-bureau report as a PDF
+                {pdfGuidance.provider_name === "SmartCredit" ? " from smartcredit.com" : ""} and
+                upload it below.
+              </p>
+            </div>
+          </div>
+          <button
+            className="pdf-guidance-banner__dismiss"
+            onClick={() => setPdfGuidance(null)}
+            aria-label="Dismiss"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       <header className="connect-page__header">
         <h1>Connect Your Credit Report</h1>
         <p className="connect-page__subtitle">
@@ -251,7 +302,7 @@ export default function ConnectCreditReport() {
         </section>
 
         {/* ── Card 3: Upload a Report ── */}
-        <section className="connect-card">
+        <section className="connect-card" ref={uploadSectionRef}>
           <div className="connect-card__icon">📄</div>
           <h2>Upload a Report</h2>
           <p className="connect-card__desc">

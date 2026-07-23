@@ -31,6 +31,7 @@ function getCapabilityTags(row: ProviderCapabilitiesRow): string[] {
   if (row.refresh_supported) tags.push("Refresh");
   if (row.monitoring_supported) tags.push("Monitoring");
   if (row.report_retrieval_supported) tags.push("Report Retrieval");
+  if (!row.report_retrieval_supported && row.enrollment_supported) tags.push("PDF Upload Required");
   if (row.oauth_supported) tags.push("OAuth");
   if (row.enrollment_supported) tags.push("Enrollment");
   if (row.sandbox_supported) tags.push("Sandbox");
