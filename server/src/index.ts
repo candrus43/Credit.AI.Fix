@@ -3,6 +3,7 @@ import cors from "cors";
 import { initDb } from "./db/connection.js";
 import healthRouter from "./routes/health.js";
 import providersRouter from "./routes/providers.js";
+import normalizeRouter from "./routes/normalize.js";
 import uploadRouter, { ensureStorageDir } from "./routes/upload.js";
 import authRouter from "./routes/auth.js";
 
@@ -26,6 +27,7 @@ async function main() {
   app.use("/api", healthRouter);
   app.use("/api/providers", providersRouter);
   app.use("/api/reports", uploadRouter);
+  app.use("/api/reports", normalizeRouter);
   app.use("/api/auth", authRouter);
 
   app.listen(API_PORT, () => {
