@@ -46,7 +46,14 @@ export interface FieldMapping {
 
 const mappingRegistry: Map<string, FieldMapping> = new Map();
 
-function registerMapping(mapping: FieldMapping): void {
+export function registerMapping(mapping: FieldMapping): void {
+  mappingRegistry.set(mapping.providerName.toLowerCase(), mapping);
+}
+
+/**
+ * Update (replace) an existing mapping in the registry.
+ */
+export function setMapping(mapping: FieldMapping): void {
   mappingRegistry.set(mapping.providerName.toLowerCase(), mapping);
 }
 
@@ -473,6 +480,13 @@ export function hasMapping(providerName: string): boolean {
  */
 export function listMappings(): string[] {
   return Array.from(mappingRegistry.keys());
+}
+
+/**
+ * Get all registered provider mappings (full objects).
+ */
+export function getAllMappings(): FieldMapping[] {
+  return Array.from(mappingRegistry.values());
 }
 
 /**
