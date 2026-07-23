@@ -6,6 +6,7 @@ import providersRouter from "./routes/providers.js";
 import normalizeRouter from "./routes/normalize.js";
 import uploadRouter, { ensureStorageDir } from "./routes/upload.js";
 import authRouter from "./routes/auth.js";
+import testingRouter from "./routes/testing.js";
 
 const API_PORT = parseInt(process.env.SERVER_PORT || "3001", 10);
 
@@ -29,6 +30,7 @@ async function main() {
   app.use("/api/reports", uploadRouter);
   app.use("/api/reports", normalizeRouter);
   app.use("/api/auth", authRouter);
+  app.use("/api/testing", testingRouter);
 
   app.listen(API_PORT, () => {
     console.log(`[server] CreditBridge API running on http://localhost:${API_PORT}`);

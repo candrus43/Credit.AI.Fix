@@ -12,6 +12,12 @@ import type { Database } from "bun:sqlite";
 import type { ProviderAdapter } from "./types.js";
 import { SmartCreditAdapter } from "./smartcredit/adapter.js";
 import { SyntheticAdapter } from "./synthetic/adapter.js";
+import { MyScoreIQAdapter } from "./myscoreiq/adapter.js";
+import { IdentityIQAdapter } from "./identityiq/adapter.js";
+import { CreditHeroScoreAdapter } from "./creditheroscore/adapter.js";
+import { EquifaxAdapter } from "./equifax/adapter.js";
+import { TransUnionAdapter } from "./transunion/adapter.js";
+import { ExperianAdapter } from "./experian/adapter.js";
 
 type AdapterConstructor = new (db: Database) => ProviderAdapter;
 
@@ -22,6 +28,12 @@ type AdapterConstructor = new (db: Database) => ProviderAdapter;
 const ADAPTER_REGISTRY: Map<string, AdapterConstructor> = new Map<string, AdapterConstructor>([
   ["SmartCredit", SmartCreditAdapter],
   ["Synthetic", SyntheticAdapter],
+  ["MyScoreIQ", MyScoreIQAdapter],
+  ["IdentityIQ", IdentityIQAdapter],
+  ["Credit Hero Score", CreditHeroScoreAdapter],
+  ["Equifax Consumer", EquifaxAdapter],
+  ["TransUnion Consumer", TransUnionAdapter],
+  ["Experian Consumer", ExperianAdapter],
 ]);
 
 /**
