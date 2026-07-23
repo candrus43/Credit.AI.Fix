@@ -7,6 +7,9 @@ import normalizeRouter from "./routes/normalize.js";
 import uploadRouter, { ensureStorageDir } from "./routes/upload.js";
 import authRouter from "./routes/auth.js";
 import testingRouter from "./routes/testing.js";
+import mappingAdminRouter from "./routes/mapping-admin.js";
+import { getAllMappings } from "./normalization/mappings.js";
+import { seedInitialVersion } from "./normalization/mapping-store.js";
 
 const API_PORT = parseInt(process.env.SERVER_PORT || "3001", 10);
 
@@ -31,6 +34,14 @@ async function main() {
   app.use("/api/reports", normalizeRouter);
   app.use("/api/auth", authRouter);
   app.use("/api/testing", testingRouter);
+  app.use("/api/admin", mappingAdminRouter);
+
+  // Seed initial mapping versions for all registered providers
+  const allMappings = getAllMappings();
+  for (const mapping of allMappings) {
+    seedInitialVersion(mapping.providerName, mapping);
+  }
+  console.log(`[server] Seeded mapping versions for ${allMappings.length} providers`);
 
   app.listen(API_PORT, () => {
     console.log(`[server] CreditBridge API running on http://localhost:${API_PORT}`);
