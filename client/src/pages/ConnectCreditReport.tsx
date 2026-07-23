@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import type { ProviderCapabilitiesRow } from "@creditbridge/shared";
-import { fetchProviders, uploadReport } from "../lib/api";
+import { fetchProviders, uploadReport, retrieveReport } from "../lib/api";
 import ProviderCard from "../components/ProviderCard";
 import ConsentScreen from "../components/ConsentScreen";
 
@@ -34,11 +34,16 @@ export default function ConnectCreditReport() {
 
   const handleConnect = useCallback((name: string) => {
     const provider = providers.find((p) => p.provider_name === name);
-    if (provider) {
-      setConsentProvider(provider);
-    } else {
+    if (!provider) {
       alert(`Provider "${name}" not found.`);
+      return;
     }
+    // Synthetic is always available — trigger retrieval directly
+    if (provider.provider_name === "Synthetic") {
+      handleRefresh(provider.provider_name);
+      return;
+    }
+    setConsentProvider(provider);
   }, [providers]);
 
   const handleDisconnect = useCallback((name: string) => {
@@ -46,14 +51,26 @@ export default function ConnectCreditReport() {
     console.log(`[connect] Disconnected from ${name}`);
   }, []);
 
-  const handleRefresh = useCallback((name: string) => {
-    alert(`Refresh flow for ${name} is not yet implemented.`);
-  }, []);
+  const handleRefresh = useCallback(async (name: string) => {
+    try {
+      const result = await retrieveReport(name, DEMO_CONSUMER_ID);
+      // Store the retrieval result for the review page
+      sessionStorage.setItem(
+        `report_data_${result.reportId}`,
+        JSON.stringify(result)
+      );
+      navigate(`/reports/${result.reportId}/review`);
+    } catch (err) {
+      alert(`Report retrieval failed: ${(err as Error).message}`);
+    }
+  }, [navigate]);
 
   const handleConsentAuthorize = useCallback(() => {
-    // ProviderCard will handle the redirect; close consent screen
+    if (!consentProvider) return;
+    // After consent, trigger report retrieval
+    handleRefresh(consentProvider.provider_name);
     setConsentProvider(null);
-  }, []);
+  }, [consentProvider, handleRefresh]);
 
   const handleConsentCancel = useCallback(() => {
     setConsentProvider(null);
@@ -186,15 +203,7 @@ export default function ConnectCreditReport() {
             className="connect-card__synthetic-link"
             onClick={(e) => {
               e.preventDefault();
-              const synthetic = providers.find(
-                (p) => p.provider_name === "Synthetic"
-              );
-              if (synthetic) {
-                const el = document.getElementById(
-                  `provider-${synthetic.provider_name}`
-                );
-                el?.scrollIntoView({ behavior: "smooth" });
-              }
+              handleRefresh("Synthetic");
             }}
           >
             Continue with Synthetic Data →
@@ -375,9 +384,7 @@ export default function ConnectCreditReport() {
 
           <button
             className="btn btn--primary"
-            onClick={() =>
-              alert("Manual entry flow is not yet implemented.")
-            }
+            onClick={() => navigate("/reports/manual")}
           >
             Start Manual Entry
           </button>

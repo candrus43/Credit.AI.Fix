@@ -211,6 +211,229 @@ function severityBadge(severity: string): string {
   }
 }
 
+// ── NormalizedReport → ReportData converter ──────────
+
+interface NormalizedField<T> {
+  normalized: T;
+  original: string | null;
+}
+
+interface NormalizedReportShape {
+  providerName: string;
+  sourceType: string;
+  reportDate: string | null;
+  importDate: string;
+  bureauSections: Array<{
+    bureau: string;
+    consumer: {
+      fullName: NormalizedField<string>;
+      addressLine1: NormalizedField<string>;
+      addressLine2: NormalizedField<string>;
+      city: NormalizedField<string>;
+      state: NormalizedField<string>;
+      zip: NormalizedField<string>;
+      ssnLast4: NormalizedField<string>;
+      dateOfBirth: NormalizedField<string>;
+      phone: NormalizedField<string>;
+      employer: NormalizedField<string>;
+    };
+    scores: Array<{
+      bureau: NormalizedField<string>;
+      score: NormalizedField<number | null>;
+      model: NormalizedField<string>;
+      date: NormalizedField<string>;
+      factors: NormalizedField<string[]>;
+    }>;
+    tradelines: Array<{
+      creditorName: NormalizedField<string>;
+      originalCreditorName: NormalizedField<string>;
+      maskedAccountNumber: NormalizedField<string>;
+      accountType: NormalizedField<string>;
+      ownership: NormalizedField<string>;
+      accountStatus: NormalizedField<string>;
+      paymentStatus: NormalizedField<string>;
+      balance: NormalizedField<number | null>;
+      creditLimit: NormalizedField<number | null>;
+      pastDueAmount: NormalizedField<number | null>;
+      highBalance: NormalizedField<number | null>;
+      monthlyPayment: NormalizedField<number | null>;
+      dateOpened: NormalizedField<string>;
+      dateClosed: NormalizedField<string>;
+      dateReported: NormalizedField<string>;
+      dateOfLastActivity: NormalizedField<string>;
+      firstDelinquencyDate: NormalizedField<string>;
+      paymentHistory: NormalizedField<string[]>;
+      remarks: NormalizedField<string>;
+      disputeIndicator: NormalizedField<boolean>;
+      providerSpecificId: NormalizedField<string>;
+      confidence: number;
+    }>;
+    collections: Array<{
+      collectionAgency: NormalizedField<string>;
+      originalCreditor: NormalizedField<string>;
+      amount: NormalizedField<number | null>;
+      accountNumber: NormalizedField<string>;
+      dateAssigned: NormalizedField<string>;
+      status: NormalizedField<string>;
+      confidence: number;
+    }>;
+    inquiries: Array<{
+      bureau: NormalizedField<string>;
+      inquiryDate: NormalizedField<string>;
+      companyName: NormalizedField<string>;
+      inquiryType: NormalizedField<"hard" | "soft">;
+      confidence: number;
+    }>;
+    publicRecords: Array<{
+      bureau: NormalizedField<string>;
+      recordType: NormalizedField<string>;
+      recordDate: NormalizedField<string>;
+      court: NormalizedField<string>;
+      referenceNumber: NormalizedField<string>;
+      amount: NormalizedField<number | null>;
+      status: NormalizedField<string>;
+      confidence: number;
+    }>;
+  }>;
+}
+
+function nfVal<T>(f: NormalizedField<T> | undefined): T {
+  return f ? f.normalized : (null as unknown as T);
+}
+
+function convertNormalizedToReportData(
+  normReport: NormalizedReportShape,
+  reportId: number
+): ReportData {
+  const sections = normReport.bureauSections || [];
+  const firstSection = sections[0];
+  const consumer = firstSection?.consumer;
+
+  const scores: ScoreData[] = [];
+  const tradelines: TradelineData[] = [];
+  const collections: CollectionData[] = [];
+  const inquiries: InquiryData[] = [];
+  const publicRecords: PublicRecordData[] = [];
+
+  for (const section of sections) {
+    // Scores
+    for (const s of section.scores) {
+      scores.push({
+        bureau: nfVal(s.bureau),
+        score: nfVal(s.score) ?? 0,
+        model: nfVal(s.model),
+        date: nfVal(s.date),
+        confidence: 1,
+      });
+    }
+    // Tradelines
+    for (const tl of section.tradelines) {
+      tradelines.push({
+        bureau: section.bureau,
+        creditorName: nfVal(tl.creditorName),
+        originalCreditorName: nfVal(tl.originalCreditorName),
+        maskedAccountNumber: nfVal(tl.maskedAccountNumber),
+        accountType: nfVal(tl.accountType),
+        ownership: nfVal(tl.ownership),
+        accountStatus: nfVal(tl.accountStatus),
+        paymentStatus: nfVal(tl.paymentStatus),
+        balance: nfVal(tl.balance) ?? undefined,
+        creditLimit: nfVal(tl.creditLimit) ?? undefined,
+        pastDueAmount: nfVal(tl.pastDueAmount) ?? undefined,
+        highBalance: nfVal(tl.highBalance) ?? undefined,
+        monthlyPayment: nfVal(tl.monthlyPayment) ?? undefined,
+        dateOpened: nfVal(tl.dateOpened),
+        dateClosed: nfVal(tl.dateClosed),
+        dateReported: nfVal(tl.dateReported),
+        dateOfLastActivity: nfVal(tl.dateOfLastActivity),
+        firstDelinquencyDate: nfVal(tl.firstDelinquencyDate),
+        paymentHistory: nfVal(tl.paymentHistory),
+        remarks: nfVal(tl.remarks),
+        disputeIndicator: nfVal(tl.disputeIndicator),
+        confidence: tl.confidence ?? 1,
+      });
+    }
+    // Collections
+    for (const c of section.collections) {
+      collections.push({
+        bureau: section.bureau,
+        collectionAgency: nfVal(c.collectionAgency),
+        originalCreditor: nfVal(c.originalCreditor),
+        amount: nfVal(c.amount) ?? 0,
+        accountNumber: nfVal(c.accountNumber),
+        dateAssigned: nfVal(c.dateAssigned),
+        status: nfVal(c.status),
+        confidence: c.confidence ?? 1,
+      });
+    }
+    // Inquiries
+    for (const i of section.inquiries) {
+      inquiries.push({
+        bureau: nfVal(i.bureau) || section.bureau,
+        inquiryDate: nfVal(i.inquiryDate),
+        companyName: nfVal(i.companyName),
+        inquiryType: nfVal(i.inquiryType) || "soft",
+        confidence: i.confidence ?? 1,
+      });
+    }
+    // Public records
+    for (const pr of section.publicRecords) {
+      publicRecords.push({
+        bureau: nfVal(pr.bureau) || section.bureau,
+        recordType: nfVal(pr.recordType),
+        recordDate: nfVal(pr.recordDate),
+        court: nfVal(pr.court),
+        referenceNumber: nfVal(pr.referenceNumber),
+        amount: nfVal(pr.amount) ?? undefined,
+        status: nfVal(pr.status),
+        confidence: pr.confidence ?? 1,
+      });
+    }
+  }
+
+  return {
+    reportId,
+    provider: normReport.providerName || "Unknown",
+    providerConfidence: 1,
+    matchedPattern: normReport.sourceType || "synthetic",
+    reportDate: normReport.reportDate,
+    personalInfo: {
+      data: {
+        fullName: consumer ? nfVal(consumer.fullName) : "",
+        addressLine1: consumer ? nfVal(consumer.addressLine1) : "",
+        addressLine2: consumer ? nfVal(consumer.addressLine2) : "",
+        city: consumer ? nfVal(consumer.city) : "",
+        state: consumer ? nfVal(consumer.state) : "",
+        zip: consumer ? nfVal(consumer.zip) : "",
+        ssnLast4: consumer ? nfVal(consumer.ssnLast4) : "",
+        dateOfBirth: consumer ? nfVal(consumer.dateOfBirth) : "",
+        phone: consumer ? nfVal(consumer.phone) : "",
+        employer: consumer ? nfVal(consumer.employer) : "",
+      },
+      confidence: {
+        fullName: 1,
+        addressLine1: 1,
+        addressLine2: 1,
+        city: 1,
+        state: 1,
+        zip: 1,
+        ssnLast4: 1,
+        dateOfBirth: 1,
+        phone: 1,
+        employer: 1,
+      },
+    },
+    scores,
+    tradelines,
+    collections,
+    inquiries,
+    publicRecords,
+    remarks: [],
+    bureauCount: sections.length,
+    extractionConfidence: 1,
+  };
+}
+
 // ── Component ─────────────────────────────────────
 
 export default function ReportReview() {
@@ -250,52 +473,102 @@ export default function ReportReview() {
   useEffect(() => {
     const load = async () => {
       try {
-        // Try sessionStorage first (post-upload flow)
+        // Try sessionStorage first (post-upload or post-retrieval flow)
         const cachedKey = `report_data_${reportId}`;
         const cached = sessionStorage.getItem(cachedKey);
         if (cached) {
-          const parsed = JSON.parse(cached) as ReportData;
-          setReportData(parsed);
-          // Determine initial bureau from data
-          if (parsed.tradelines.length > 0) {
-            const first = parsed.tradelines[0]?.bureau;
-            if (first) setActiveBureau(first);
-          }
-          if (parsed.scores.length > 0) {
-            const firstScore = parsed.scores[0]?.bureau;
-            if (firstScore) setActiveScoreBureau(firstScore);
+          const parsed = JSON.parse(cached);
+
+          // Check if this is a retrieval response (has "report" + "matches")
+          if (parsed.report && parsed.matches) {
+            // Retrieval flow — convert normalized report to ReportData format
+            const normReport = parsed.report;
+            const flat = convertNormalizedToReportData(normReport, reportId);
+            setReportData(flat);
+
+            if (flat.tradelines.length > 0) {
+              setActiveBureau(flat.tradelines[0]?.bureau || "Equifax");
+            }
+            if (flat.scores.length > 0) {
+              setActiveScoreBureau(flat.scores[0]?.bureau || "Equifax");
+            }
+
+            setNormalization({
+              normalizedReport: normReport,
+              crossBureauMatches: parsed.matches || [],
+              allDiscrepancies: parsed.discrepancies || [],
+              stats: parsed.stats || { bureauCount: 0, totalTradelines: 0, totalMatches: 0, totalDiscrepancies: 0 },
+            });
+          } else {
+            // Upload flow — existing ReportData format
+            const reportData = parsed as ReportData;
+            setReportData(reportData);
+            if (reportData.tradelines.length > 0) {
+              const first = reportData.tradelines[0]?.bureau;
+              if (first) setActiveBureau(first);
+            }
+            if (reportData.scores.length > 0) {
+              const firstScore = reportData.scores[0]?.bureau;
+              if (firstScore) setActiveScoreBureau(firstScore);
+            }
+
+            // Trigger normalization
+            try {
+              const normResult = await normalizeReportData(
+                reportData as unknown as Record<string, unknown>,
+                reportData.provider
+              );
+              setNormalization(normResult);
+            } catch {
+              console.warn("[review] Normalization unavailable, proceeding without cross-bureau matches");
+            }
           }
           sessionStorage.removeItem(cachedKey); // clean up
-
-          // Trigger normalization
-          try {
-            const normResult = await normalizeReportData(parsed as unknown as Record<string, unknown>, parsed.provider);
-            setNormalization(normResult);
-          } catch {
-            // Normalization is optional — proceed without cross-bureau data
-            console.warn("[review] Normalization unavailable, proceeding without cross-bureau matches");
-          }
         } else {
-          // Try fetching metadata from the server
+          // Try fetching from the server
           try {
-            const meta = await fetchReport(reportId);
-            // If we have metadata but no extraction data, show limited view
-            setReportData({
-              reportId: meta.id,
-              provider: meta.provider_name,
-              providerConfidence: 1,
-              matchedPattern: meta.source_type,
-              reportDate: meta.report_date,
-              personalInfo: { data: {}, confidence: {} as PersonalInfoConfidence },
-              scores: [],
-              tradelines: [],
-              collections: [],
-              inquiries: [],
-              publicRecords: [],
-              remarks: [],
-              bureauCount: meta.three_bureau_available ? 3 : 1,
-              extractionConfidence: 1,
-            });
+            // First try the /data endpoint (post-retrieval reports)
+            const dataRes = await fetch(`/api/reports/${reportId}/data`);
+            if (dataRes.ok) {
+              const { report: normReport } = await dataRes.json();
+              const flat = convertNormalizedToReportData(normReport, reportId);
+              setReportData(flat);
+              if (flat.tradelines.length > 0) {
+                setActiveBureau(flat.tradelines[0]?.bureau || "Equifax");
+              }
+              if (flat.scores.length > 0) {
+                setActiveScoreBureau(flat.scores[0]?.bureau || "Equifax");
+              }
+              // Also trigger normalization for cross-bureau data
+              try {
+                const normResult = await normalizeReportData(
+                  flat as unknown as Record<string, unknown>,
+                  flat.provider
+                );
+                setNormalization(normResult);
+              } catch {
+                console.warn("[review] Normalization unavailable");
+              }
+            } else {
+              // Fall back to metadata
+              const meta = await fetchReport(reportId);
+              setReportData({
+                reportId: meta.id,
+                provider: meta.provider_name,
+                providerConfidence: 1,
+                matchedPattern: meta.source_type,
+                reportDate: meta.report_date,
+                personalInfo: { data: {}, confidence: {} as PersonalInfoConfidence },
+                scores: [],
+                tradelines: [],
+                collections: [],
+                inquiries: [],
+                publicRecords: [],
+                remarks: [],
+                bureauCount: meta.three_bureau_available ? 3 : 1,
+                extractionConfidence: 1,
+              });
+            }
           } catch {
             setError("Report data not found. Please re-upload your report.");
           }
